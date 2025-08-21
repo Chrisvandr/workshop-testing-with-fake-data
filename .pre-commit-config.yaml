@@ -1,0 +1,35 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-added-large-files
+        exclude: src/etl/temp_data/.*
+      - id: mixed-line-ending
+        args: [--fix=lf]
+        files: '\.sh$|^Dockerfile$|^Makefile$'
+      - id: check-ast
+      - id: check-builtin-literals
+      - id: check-docstring-first
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+        args: ['--unsafe']
+      - id: name-tests-test
+        args: ['--pytest-test-first']
+        exclude: '(utils|integration_tests_entry.py)'
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.13
+    hooks:
+      - id: ruff-check
+        args: [ --fix ]
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.16.0
+    hooks:
+    - id: mypy
+      args: [--ignore-missing-imports]
+      additional_dependencies: [ types-PyYAML==6.0.12.3, types-requests==2.31.0.9 ]

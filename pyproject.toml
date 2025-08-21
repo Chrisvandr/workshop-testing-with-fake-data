@@ -1,0 +1,150 @@
+[project]
+name = "workshop-testing-with-fake-data"
+version = "0.1.0"
+description = "Workshop demonstrating testing with fake data using Factory Boy, Faker, SQLModel, and FastAPI using Docker"
+readme = "README.md"
+authors = []
+requires-python = ">=3.12"
+
+dependencies = [
+    # Core FastAPI and web dependencies
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.6.0",
+    "httpx>=0.28.0",
+    # Database dependencies
+    "sqlalchemy>=2.0.0",
+    "psycopg2-binary>=2.9.0",
+    "alembic>=1.14.0",
+    # Fake data generation
+    "factory-boy>=3.3.0",
+    "faker>=33.0.0",
+    # Utilities
+    "structlog>=24.4.0",
+    "typer>=0.15.0",
+    "pandas>=2.2.0",
+    "python-multipart>=0.0.18",
+    "sqlmodel>=0.0.24",
+]
+
+[dependency-groups]
+testing = [
+    # Testing
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+
+    # Code quality
+    "ruff>=0.8.0",
+    "mypy>=1.13.0",
+
+    # Development tools
+    "pre-commit>=4.0.0",
+]
+
+[tool.uv]
+package = true
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+src = ["src"]
+include = ['pyproject.toml']
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".pyenv",
+    ".pytest_cache",
+    ".ruff_cache",
+    "venv",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "site-packages",
+]
+
+[tool.ruff.lint]
+select = [
+    "A",
+    "ANN",
+    "ARG",
+    "ASYNC",
+    "B",
+    "C",
+    "C4",
+    "C901",
+    "C90",
+    "E",
+    "EM",
+    "ERA",
+    "EXE",
+    "F",
+    "FAST",
+    "W",
+    "I",
+    "ICN",
+    "ISC",
+    "INP",
+    "LOG",
+    "N",
+    "NPY",
+    "PT",
+    "PYI",
+    "PIE",
+    "PD",
+    "PERF",
+    "PL",
+    "Q",
+    "RET",
+    "RSE",
+    "RUF",
+    "S",
+    "SIM",
+    "TC",
+    "UP",
+]
+ignore = [
+    "ANN003", # type kwargs
+    "ANN401", # dynamically typed expression
+    "RUF012", # Mutable class annotate ClassVar
+    "PT011",  # pytest-raises-too-broad
+    "S105",   #	hardcoded-password-string
+    "S106",   # hardcoded-password-func-arg
+    "PD901",
+
+]
+
+[tool.ruff.lint.mccabe]
+# Flag errors (`C901`) whenever the complexity exceeds level.
+max-complexity = 6
+
+[tool.ruff.lint.flake8-annotations]
+allow-star-arg-any = true
+mypy-init-return = true
+suppress-none-returning = true
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"src/models/faker_models/**" = ["ARG005"]
+"tests/**/*.py" = [
+    "S101",   # Allow assert statements in tests
+    "ARG002", # unused method argument
+    "PL",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "unit: marks tests as unit tests (no database required)",
+    "docker: marks tests as docker tests (requires database)",
+    "integration: marks tests as integration tests (requires external services)",
+]
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+default = true

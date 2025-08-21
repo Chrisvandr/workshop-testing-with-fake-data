@@ -1,0 +1,36 @@
+services:
+  live-db:
+    image: postgres:17-bookworm
+    container_name: live-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      PGDATA: /var/lib/postgresql/data/pgdata
+      PGPORT: 9999
+      TZ: Europe/Amsterdam
+    restart: always
+    ports:
+      - "9999:9999"
+    volumes:
+      - postgres_live:/var/lib/postgresql/data/pgdata
+      # execute small script to create source schema
+      - ./db-init-scripts:/docker-entrypoint-initdb.d
+
+  # the database to which we write our fake data
+  test-db:
+    image: postgres:17-bookworm
+    container_name: test-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      PGDATA: /var/lib/postgresql/data/pgdata
+      PGPORT: 8888
+      TZ: Europe/Amsterdam
+    restart: always
+    ports:
+      - "8888:8888"
+
+volumes:
+  postgres_live:
