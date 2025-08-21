@@ -45,8 +45,8 @@ class TestCbsApi:
         assert results == data
 
 
-@pytest.skip("Used for locally calling the CBS API")
 @pytest.mark.integration
+@pytest.mark.skip("Used for locally calling the CBS API")
 class TestCbsApiIntegration:
     def test_get_gerealiseerde_woningen_for_year_ok(self):
         api = CbsApi()

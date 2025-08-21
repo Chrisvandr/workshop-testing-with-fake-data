@@ -63,10 +63,10 @@ You need to have Docker installed.
     uv python install 3.12
     ```
 
-2. Start the database
+2. Start the database in detached mode
 
     ```bash
-    docker compose up postgres -d
+    docker compose up -d
     ```
 
 3. **Run tests**:
@@ -90,22 +90,3 @@ You need to have Docker installed.
 - `@pytest.mark.unit`: Tests that don't require a database
 - `@pytest.mark.docker`: Tests that require the Docker database
 - `@pytest.mark.integration`: Tests that require external services
-
-### Factory Patterns
-```python
-class UserFactory(SQLAlchemyModelFactory):
-    class Meta:
-        model = User
-        sqlalchemy_session_persistence = "commit"
-
-    name = Faker("name")
-    email = Faker("email")
-```
-
-### Database Testing
-```python
-def test_user_creation(db_session: Session):
-    user = UserFactory()
-    assert user.id is not None
-    assert "@" in user.email
-```
