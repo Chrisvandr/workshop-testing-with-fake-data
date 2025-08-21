@@ -4,8 +4,8 @@ import pytest
 from sqlalchemy import Engine
 
 from etl.apis.rest_client import AsyncRestClient, SyncRestClient
+from etl.database import PostgresConnector
 from etl.flows.base import SqlmodelLoader
-from etl.settings.database import PostgresConnector
 
 
 @pytest.fixture

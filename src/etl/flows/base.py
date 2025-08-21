@@ -6,8 +6,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, SQLModel
 from structlog import get_logger
 
+from etl.database import PostgresConnector
 from etl.flows.utils import collect_validation_errors
-from etl.settings.database import PostgresConnector
 
 logger = get_logger(__name__)
 
