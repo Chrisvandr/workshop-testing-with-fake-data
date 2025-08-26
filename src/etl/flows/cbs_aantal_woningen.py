@@ -11,7 +11,7 @@ from models.v1.cbs_aantal_woningen import CbsAantalWoningen
 logger = get_logger(__name__)
 
 
-class CbsExtractor:
+class CbsAantalWoningenExtractor:
     def __init__(self, api: CbsApi | None = None):
         if api is None:
             api = CbsApi()
@@ -45,7 +45,7 @@ class CbsExtractor:
         return pd.concat(dfs).reset_index()
 
 
-class CbsTransformer:
+class CbsAantalWoningenTransformer:
     @staticmethod
     def transform(df: pd.DataFrame) -> list[CbsAantalWoningen]:
         objects = []
@@ -64,11 +64,13 @@ class CbsTransformer:
         return objects
 
 
-def run_cbs_flow(extractor: CbsExtractor, loader: SqlmodelLoader):
+def run_cbs_aantal_woningen_flow(
+    extractor: CbsAantalWoningenExtractor, loader: SqlmodelLoader
+):
     df = extractor.extract()
-    objects = CbsTransformer.transform(df)
+    objects = CbsAantalWoningenTransformer.transform(df)
     loader.recreate_and_load([CbsAantalWoningen], objects)
 
 
 if __name__ == "__main__":
-    df = CbsExtractor().extract()
+    df = CbsAantalWoningenExtractor().extract()

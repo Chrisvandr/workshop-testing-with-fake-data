@@ -103,3 +103,36 @@ You need to have Docker installed.
 - `@pytest.mark.unit`: Tests that don't require a database
 - `@pytest.mark.docker`: Tests that require the Docker database
 - `@pytest.mark.integration`: Tests that require external services
+
+
+## Tasks
+
+In this workshop, an example has been provided that retrieves the number of houses (aantal woningen) built per municipality (gemeente) for the last 10 years from Centraal Bureau voor Statistiek (CBS). This data is then stored in a database. And is then used to create a RestAPI endpoint to provide this information in a similar format.
+
+**Objective**
+
+What we want to do now, is to enrich this data with other data from the CBS. For example, with the sale prices of houses (for which the data endpoint has already been provided in `CbsApi`), in order to create an endpoint that combines the number of houses built with the sale price of houses in a district for the last 10 years.
+
+```python
+# api/{gm_code}/housing should return
+{
+   "year": ...,
+   "aantal_woningen": ...,
+   "verkocht_woningen": ...,
+   "gemiddelde_verkoopprijs": ...
+}
+```
+**Tasks**
+
+- Add a test for `CbsApi`'s `get_verkoopprijzen`
+- Create a new SQLModel that represents that data in the database
+- Based on the SQLModel create a SQLAlchemyModelFactory to create SQLModel objects with fake data to use in tests
+- Create a new 'flow' to extract data retrieved from get_verkoopprijzen in `CbsApi`, add test
+- Create new, or use existing Crud class with a function to read the new data from database, add test
+- Create new route to retrieve the new data, add test
+
+
+Bonus
+- Visualise results
+- Retrieve data for specific year with query parameters (https://fastapi.tiangolo.com/tutorial/query-params/)
+- Add other data sources from CBS, this is number of houses ([https://www.cbs.nl/nl-nl/cijfers/detail/81955NED](https://www.cbs.nl/nl-nl/cijfers/detail/81955NED))

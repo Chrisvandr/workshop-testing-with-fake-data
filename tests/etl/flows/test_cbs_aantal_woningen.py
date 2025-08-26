@@ -8,13 +8,16 @@ from structlog.testing import LogCapture
 
 from etl.apis.cbs import CbsApi
 from etl.flows.base import SqlmodelLoader
-from etl.flows.cbs import CbsExtractor, run_cbs_flow
+from etl.flows.cbs_aantal_woningen import (
+    CbsAantalWoningenExtractor,
+    run_cbs_aantal_woningen_flow,
+)
 from models.faker_models.db.fake_models import GemeenteFactory
 from models.v1.cbs_aantal_woningen import CbsAantalWoningen
 from tests.etl.utils import get_row_count
 
 
-class TestCbsExtractor:
+class TestCbsAantalWoningenExtractor:
     @pytest.fixture(autouse=True)
     def _assign_api_to_class(self):
         self.api = MagicMock(spec=CbsApi)
@@ -25,7 +28,7 @@ class TestCbsExtractor:
         """
         self.api.get_gerealiseerde_woningen_for_year.return_value = []
 
-        CbsExtractor(self.api).extract()
+        CbsAantalWoningenExtractor(self.api).extract()
         assert "No data to extract for" in log_output.entries[0]["event"]
 
     def test_missing_current_year_data(self):
@@ -61,19 +64,19 @@ class TestCbsExtractor:
             mocked_get_gerealiseerde_woningen_for_year
         )
 
-        df = CbsExtractor(self.api).extract()
+        df = CbsAantalWoningenExtractor(self.api).extract()
         assert len(df) == 1
 
 
 @pytest.mark.docker
-class TestCbsFlow:
-    def test_should_write_cbs_objects(
+class TestCbsAantalWoningenFlow:
+    def test_should_write_aantal_woningen_objects(
         self,
         postgres_loader: SqlmodelLoader,
         db_session: Session,
         current_year: int,
     ):
-        extractor = MagicMock(spec=CbsExtractor)
+        extractor = MagicMock(spec=CbsAantalWoningenExtractor)
         extractor.extract.return_value = pd.DataFrame(
             {
                 "gm_code": [
@@ -89,7 +92,7 @@ class TestCbsFlow:
         )
         GemeenteFactory.create(gm_code="gm1")
 
-        run_cbs_flow(extractor, postgres_loader)
+        run_cbs_aantal_woningen_flow(extractor, postgres_loader)
 
         assert get_row_count(db_session, CbsAantalWoningen) == 1
 
@@ -102,7 +105,7 @@ class TestCbsFlow:
         """
         Test whether the flow keeps running even though there is an invalid gm_code
         """
-        extractor = MagicMock(spec=CbsExtractor)
+        extractor = MagicMock(spec=CbsAantalWoningenExtractor)
         extractor.extract.return_value = pd.DataFrame(
             {
                 "gm_code": [
@@ -117,7 +120,7 @@ class TestCbsFlow:
             },
         )
         with pytest.raises(ValueError):
-            run_cbs_flow(extractor, postgres_loader)
+            run_cbs_aantal_woningen_flow(extractor, postgres_loader)
 
         # There should be no records in the database, invalid gm_code
         assert get_row_count(db_session, CbsAantalWoningen) == 0
