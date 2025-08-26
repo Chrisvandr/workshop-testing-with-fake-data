@@ -11,7 +11,7 @@ setup_structlog(settings.LOG_LEVEL)
 
 
 @app.command()
-def cbs_gerealiseerde_woningen_v2():
+def cbs_gerealiseerde_woningen():
     run_cbs_flow(CbsExtractor(), SqlmodelLoader.create())
 
 

@@ -1,7 +1,7 @@
 from typing import Self
 
 import pandas as pd
-from sqlalchemy import Engine, RowMapping, TextClause
+from sqlalchemy import Engine, RowMapping
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, SQLModel
 from structlog import get_logger
@@ -10,17 +10,6 @@ from etl.database import PostgresConnector
 from etl.flows.utils import collect_validation_errors
 
 logger = get_logger(__name__)
-
-
-class PostgresSqlModelExtractor:
-    def __init__(self, connector: PostgresConnector, query: TextClause):
-        self.connector = connector
-        self.query = query
-
-    def extract(self) -> list[RowMapping]:
-        with Session(self.connector.engine) as session:
-            logger.info("Opened connection to database. Start extracting data")
-            return session.exec(self.query).all()
 
 
 class SqlmodelLoader:

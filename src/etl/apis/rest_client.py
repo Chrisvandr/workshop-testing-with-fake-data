@@ -11,8 +11,6 @@ from httpx import AsyncClient, HTTPError
 from structlog import get_logger
 from structlog.contextvars import bound_contextvars
 
-from shared.settings import settings
-
 logger = get_logger(__name__)
 
 
@@ -26,7 +24,7 @@ class RestClient:
 
     @property
     def hostname(self) -> str:
-        return settings.hostname_apim
+        return ""
 
     def reset_headers_cache(self) -> None:
         if "headers" in self.__dict__:

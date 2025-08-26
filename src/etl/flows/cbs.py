@@ -24,7 +24,8 @@ class CbsExtractor:
         """
 
         dfs = []
-        for year in [date.today().year - 1, date.today().year]:
+
+        for year in range(date.today().year - 10, date.today().year + 1):
             records = self.api.get_gerealiseerde_woningen_for_year(year)
             if records:
                 df = pd.DataFrame(records)
