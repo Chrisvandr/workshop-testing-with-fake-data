@@ -66,7 +66,7 @@ You need to have Docker installed.
     uv sync --all-groups
     ```
 
-    If you don't use python 3.12 or higher
+    If you don't have python 3.12 or higher
     ```bash
     uv python install 3.12
     ```
@@ -77,7 +77,13 @@ You need to have Docker installed.
     docker compose up -d
     ```
 
-3. Run tests:
+3. Activate virtual environment
+
+   ```bash
+   source ./env/bin/Activate
+   ```
+
+4. Run tests:
    ```bash
    # Unit tests (no database required)
    pytest -m unit
@@ -89,12 +95,12 @@ You need to have Docker installed.
    pytest
    ```
 
-4. Run the ETL
+5. Run the ETL
    ```bash
    python -m etl.main
    ```
 
-5. Start the API (Optional):
+6. Start the API (Optional):
    ```bash
    uvicorn app.main:app --reload --host 0.0.0.0 --port 8080
    ```

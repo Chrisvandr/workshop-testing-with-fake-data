@@ -65,7 +65,7 @@ class TestCbsAantalWoningenExtractor:
         )
 
         df = CbsAantalWoningenExtractor(self.api).extract()
-        assert len(df) == 1
+        assert len(df) == 10
 
 
 @pytest.mark.docker
