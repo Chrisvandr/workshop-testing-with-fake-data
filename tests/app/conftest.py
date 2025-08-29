@@ -21,8 +21,7 @@ def client(app: FastAPI) -> Iterator[TestClient]:
 
 @pytest.fixture
 def db_client(app: FastAPI, db_session: Session) -> Iterator[TestClient]:
-    """writes to database"""
-
+    """writes to the database running in the docker container"""
     def get_session_override() -> Generator[Session, None, None]:
         return db_session
 
