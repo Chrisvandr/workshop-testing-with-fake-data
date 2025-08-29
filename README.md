@@ -117,26 +117,40 @@ In this workshop, an example has been provided that retrieves the number of hous
 
 **Objective**
 
-What we want to do now, is to enrich this data with other data from the CBS. For example, with the sale prices of houses (for which the data endpoint has already been provided in `CbsApi`), in order to create an endpoint that combines the number of houses built with the sale price of houses in a district for the last 10 years.
+What we want to do now, is to enrich this data with other data from the CBS. For example, with the sale prices of houses (for which the data endpoint has already been provided in [CbsApi](src\etl\apis\cbs.py)), in order to create an endpoint that combines the number of houses built with the sale price of houses in a district for the last 10 years.
 
 ```python
 # api/{gm_code}/housing should return
 {
    "year": ...,
    "aantal_woningen": ...,
-   "verkocht_woningen": ...,
+   "verkochte_woningen": ...,
    "gemiddelde_verkoopprijs": ...
 }
 ```
 **Tasks**
 
-- Add a test for `CbsApi`'s `get_verkoopprijzen`
-- Create a new SQLModel that represents that data in the database
-- Based on the SQLModel create a SQLAlchemyModelFactory to create SQLModel objects with fake data to use in tests
-- Create a new 'flow' to extract data retrieved from get_verkoopprijzen in `CbsApi`, add test
-- Create new, or use existing Crud class with a function to read the new data from database, add test
-- Create new route to retrieve the new data, add test
+- Add a test for `CbsApi`'s `get_verkoopprijzen` # TODO: Mogelijk niet heel nuttig
 
+- Create a new SQLModel that represents the "verkochte_woningen" and "gemiddelde_verkoopprijs" data in the database 
+There already is a model for the [aantal woningen](src/models/v1/cbs_aantal_woningen.py)
+- Create a new 'flow' that extracts data retrieved from get_verkoopprijzen in [CbsApi](src\etl\apis\cbs.py) and loads it to the database using the [SqlmodelLoader](src\etl\flows\base.py)
+
+You may also want to write a [test](tests\etl\flows\test_cbs_aantal_woningen.py) making use the database running inside of docker
+
+hint: the get_verkoopprijzen function returns a list of dicts (records), an individual record may look like this:
+```python
+{'ID': 2, 'RegioS': 'NL01  ', 'Perioden': '1995KW03', 'PrijsindexVerkoopprijzen_1': 30, 'OntwikkelingTOVVoorgaandePeriode_2': 2.3, 'OntwikkelingTOVEenJaarEerder_3': None, 'VerkochteWoningen_4': 40498, 'OntwikkelingTOVVoorgaandePeriode_5': 9.3, 'OntwikkelingTOVEenJaarEerder_6': None, 'GemiddeldeVerkoopprijs_7': 95819, 'TotaleWaardeVerkoopprijzen_8': 3880}
+```
+
+hint: check out the [run_cbs_aantal_woningen_flow](src\etl\flows\cbs_aantal_woningen.py)
+
+
+- Create a SQLAlchemyModelFactory for for your newly created model to create SQLModel objects with fake data to use in tests. The existing faker models can be found 
+[here](src\models\faker_models\db\fake_models.py)
+- Create a new, or use the [existing](src\app\api\crud\cbs.py) Crud class with a function to read the new data from database. Create a [test](tests\app\api\crud\test_cbs.py) by generating data using the faker model
+- Create new [endpoint](src\app\api\routes\cbs_aantal_woningen.py) for our api that retrieves the new data.
+Create a [test](tests\app\api\routes\test_cbs.py) using the TestClient that simulates a call to our api using the TestClient
 
 Bonus
 - Visualise results
