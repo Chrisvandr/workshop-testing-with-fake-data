@@ -130,8 +130,6 @@ What we want to do now, is to enrich this data with other data from the CBS. For
 ```
 **Tasks**
 
-- Add a test for `CbsApi`'s `get_verkoopprijzen` # TODO: Mogelijk niet heel nuttig
-
 - Create a new SQLModel that represents the "verkochte_woningen" and "gemiddelde_verkoopprijs" data in the database 
 There already is a model for the [aantal woningen](src/models/v1/cbs_aantal_woningen.py)
 - Create a new 'flow' that extracts data retrieved from get_verkoopprijzen in [CbsApi](src\etl\apis\cbs.py) and loads it to the database using the [SqlmodelLoader](src\etl\flows\base.py)
@@ -153,6 +151,9 @@ hint: check out the [run_cbs_aantal_woningen_flow](src\etl\flows\cbs_aantal_woni
 Create a [test](tests\app\api\routes\test_cbs.py) using the TestClient that simulates a call to our api using the TestClient
 
 Bonus
+- If you have not done so already, you can try to create a factory that can generate fake output for [get_verkoopprijzen](src\etl\apis\cbs.py). You can set model = dict instead of a SQLModel class to create a factory that generates dicts. You may want to be more specific than an abitrary string when specifying the fields.
+- We may want to generate test data for our test environment. Can you do this using the same SQLModel factories?
+- To make a test setup more realistic, it is possible to add some abitrary data to our testing database. Try implementing this. Can you think of some advantages and disadvantages of this approach to testing. Are the tests you wrote deterministic, or can you think of a situation where the outcome is determined by random chance? 
 - Visualise results
 - Retrieve data for specific year with query parameters (https://fastapi.tiangolo.com/tutorial/query-params/)
 - Add other data sources from CBS, this is number of houses ([https://www.cbs.nl/nl-nl/cijfers/detail/81955NED](https://www.cbs.nl/nl-nl/cijfers/detail/81955NED))
