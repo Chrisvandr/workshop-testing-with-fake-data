@@ -153,7 +153,10 @@ Create a [test](tests\app\api\routes\test_cbs.py) using the TestClient that simu
 Bonus
 - If you have not done so already, you can try to create a factory that can generate fake output for [get_verkoopprijzen](src\etl\apis\cbs.py). You can set model = dict instead of a SQLModel class to create a factory that generates dicts. You may want to be more specific than an abitrary string when specifying the fields.
 - We may want to generate test data for our test environment. Can you do this using the same SQLModel factories?
-- To make a test setup more realistic, it is possible to add some abitrary data to our testing database. Try implementing this. Can you think of some advantages and disadvantages of this approach to testing. Are the tests you wrote deterministic, or can you think of a situation where the outcome is determined by random chance? 
+- Have a look at the [bad_test_get_aantal_woningen].(tests\app\api\crud\test_cbs.py)
+Can you explain why this test works?
+Can you think of a problem a test like this may cause?
+- It is possible to create a batch of random data using [create_batch](https://factoryboy.readthedocs.io/en/stable/reference.html#factory.Factory.create_batch). Can you use this to create a relevant test?
 - Visualise results
 - Retrieve data for specific year with query parameters (https://fastapi.tiangolo.com/tutorial/query-params/)
 - Add other data sources from CBS, this is number of houses ([https://www.cbs.nl/nl-nl/cijfers/detail/81955NED](https://www.cbs.nl/nl-nl/cijfers/detail/81955NED))
