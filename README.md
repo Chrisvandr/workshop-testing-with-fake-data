@@ -80,7 +80,7 @@ You need to have Docker installed.
 3. Activate virtual environment
 
    ```bash
-   source ./env/bin/Activate
+   source ./venv/bin/activate
    ```
 
 4. Run tests:
@@ -130,7 +130,7 @@ What we want to do now, is to enrich this data with other data from the CBS. For
 ```
 **Tasks**
 
-- Create a new SQLModel that represents the "verkochte_woningen" and "gemiddelde_verkoopprijs" data in the database 
+- Create a new SQLModel that represents the "verkochte_woningen" and "gemiddelde_verkoopprijs" data in the database
 There already is a model for the [aantal woningen](src/models/v1/cbs_aantal_woningen.py)
 - Create a new 'flow' that extracts data retrieved from get_verkoopprijzen in [CbsApi](src\etl\apis\cbs.py) and loads it to the database using the [SqlmodelLoader](src\etl\flows\base.py)
 
@@ -144,7 +144,7 @@ hint: the get_verkoopprijzen function returns a list of dicts (records), an indi
 hint: check out the [run_cbs_aantal_woningen_flow](src\etl\flows\cbs_aantal_woningen.py)
 
 
-- Create a SQLAlchemyModelFactory for for your newly created model to create SQLModel objects with fake data to use in tests. The existing faker models can be found 
+- Create a SQLAlchemyModelFactory for for your newly created model to create SQLModel objects with fake data to use in tests. The existing faker models can be found
 [here](src\models\faker_models\db\fake_models.py)
 - Create a new, or use the [existing](src\app\api\crud\cbs.py) Crud class with a function to read the new data from database. Create a [test](tests\app\api\crud\test_cbs.py) by generating data using the faker model
 - Create new [endpoint](src\app\api\routes\cbs_aantal_woningen.py) for our api that retrieves the new data.
