@@ -1,21 +1,8 @@
 from unittest.mock import MagicMock
 
 import pytest
-from sqlalchemy import Engine
 
 from etl.apis.rest_client import AsyncRestClient, SyncRestClient
-from etl.database import PostgresConnector
-from etl.flows.base import SqlmodelLoader
-
-
-@pytest.fixture
-def postgres_connector(engine: Engine) -> MagicMock:
-    return MagicMock(spec=PostgresConnector, engine=engine)
-
-
-@pytest.fixture
-def postgres_loader(postgres_connector: PostgresConnector) -> SqlmodelLoader:
-    return SqlmodelLoader(connector=postgres_connector)
 
 
 @pytest.fixture

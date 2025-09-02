@@ -1,3 +1,5 @@
+from collections.abc import Iterator
+from contextlib import contextmanager
 from functools import lru_cache
 
 from sqlalchemy import Engine
@@ -25,3 +27,29 @@ def get_engine(testing: bool = False) -> Engine:
 
         return engine
     return create_engine(str(settings.database_url))
+
+
+def get_sessions() -> Iterator[Session]:
+    """
+    Used for FastAPI, provides a session for the request lifecycle.
+    """
+    engine = get_engine(testing=False)
+    with Session(engine) as session:
+        yield session
+
+
+@contextmanager
+def get_session(testing: bool = False) -> Iterator[Session]:
+    """
+    Context manager wrapper around get_sessions
+
+    Args:
+        testing: Whether the session is for testing purposes.
+        schema_translate_map: Optional mapping for schema translation.
+        connection_type: The type of connection to use (API or Step Functions),
+        uses a different secret key for each.
+
+    """
+    engine = get_engine(testing=testing)
+    with Session(engine) as session:
+        yield session

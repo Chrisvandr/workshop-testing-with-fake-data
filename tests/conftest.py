@@ -7,7 +7,8 @@ import structlog
 from _pytest.config import Config
 from factory.alchemy import SQLAlchemyModelFactory
 from factory.random import reseed_random
-from sqlalchemy import Engine
+from sqlalchemy import Engine, event
+from sqlalchemy.orm.session import SessionTransaction
 from sqlmodel import Session, SQLModel
 from structlog.testing import LogCapture
 
@@ -46,26 +47,91 @@ def set_factory_seed():
     reseed_random("workshop")
 
 
-@pytest.fixture
-def engine() -> Iterator[Session]:
-    return get_engine(testing=True)
+@pytest.fixture(scope="session")
+def engine() -> Iterator[Engine]:
+    """
+    Create test engine and ensure clean state.
+    This is a scoped session fixture so it runs only once
+    """
+    _engine = get_engine(testing=True)
+
+    # Ensure clean state at start of test session
+    SQLModel.metadata.drop_all(_engine)
+    SQLModel.metadata.create_all(_engine)
+
+    yield _engine
+
+    # Clean up after all tests
+    SQLModel.metadata.drop_all(_engine)
+    _engine.dispose()
 
 
-@pytest.fixture
-def db_session(engine: Engine) -> Iterator[Session]:
-    # ensure deletion of existing table data
+def _rollback_session(engine: Engine) -> Iterator[Session]:
+    """Create a database session with transaction rollback after each test."""
+    connection = engine.connect()
+    transaction = connection.begin()
+
+    try:
+        session = Session(bind=connection, autoflush=False, expire_on_commit=False)
+
+        # Configure FactoryBoy to use this session
+        for factory in SQLAlchemyModelFactory.__subclasses__():
+            factory._meta.sqlalchemy_session = session
+
+        # Enable savepoints for nested transactions
+        @event.listens_for(session, "after_transaction_end")
+        def restart_savepoint(
+            session: Session, transaction: SessionTransaction
+        ) -> None:
+            if transaction.nested and not transaction._parent.nested:
+                session.expire_all()
+                session.begin_nested()
+
+        # Start a nested transaction (savepoint)
+        session.begin_nested()
+
+        yield session
+
+    finally:
+        # Reset sequences after each test
+        for factory in SQLAlchemyModelFactory.__subclasses__():
+            factory.reset_sequence()
+
+        session.close()
+        transaction.rollback()
+        connection.close()
+
+
+def _write_session(engine: Engine) -> Iterator[Session]:
+    """Writes to database during tests - data persists"""
+    # Ensure clean state at start
     SQLModel.metadata.drop_all(engine)
-
-    # Create tables for all SQLModel models
     SQLModel.metadata.create_all(engine)
 
     # Create a session for the test
     with Session(engine) as session:
-        # Ensure that all factories use the same session
+        # Configure FactoryBoy to use this session
         for factory in SQLAlchemyModelFactory.__subclasses__():
             factory._meta.sqlalchemy_session = session
 
+        # Clean existing data
+        for table in reversed(SQLModel.metadata.sorted_tables):
+            session.exec(table.delete())
+        session.commit()
+
         yield session
+
+        # Reset sequences after test
+        for factory in SQLAlchemyModelFactory.__subclasses__():
+            factory.reset_sequence()
+
+
+@pytest.fixture
+def session(engine: Engine) -> Iterator[Session]:
+    if settings.ROLLBACK_TRANSACTIONS:
+        yield from _rollback_session(engine)
+    else:
+        yield from _write_session(engine)
 
 
 @pytest.fixture

@@ -71,10 +71,7 @@ class TestCbsAantalWoningenExtractor:
 @pytest.mark.docker
 class TestCbsAantalWoningenFlow:
     def test_should_write_aantal_woningen_objects(
-        self,
-        postgres_loader: SqlmodelLoader,
-        db_session: Session,
-        current_year: int,
+        self, session: Session, current_year: int
     ):
         extractor = MagicMock(spec=CbsAantalWoningenExtractor)
         extractor.extract.return_value = pd.DataFrame(
@@ -92,15 +89,12 @@ class TestCbsAantalWoningenFlow:
         )
         GemeenteFactory.create(gm_code="gm1")
 
-        run_cbs_aantal_woningen_flow(extractor, postgres_loader)
+        run_cbs_aantal_woningen_flow(extractor, SqlmodelLoader(session))
 
-        assert get_row_count(db_session, CbsAantalWoningen) == 1
+        assert get_row_count(session, CbsAantalWoningen) == 1
 
     def test_should_not_write_cbs_objects_when_invalid_gm_code(
-        self,
-        postgres_loader: SqlmodelLoader,
-        current_year: int,
-        db_session: Session,
+        self, current_year: int, session: Session
     ):
         """
         Test whether the flow keeps running even though there is an invalid gm_code
@@ -120,7 +114,7 @@ class TestCbsAantalWoningenFlow:
             },
         )
         with pytest.raises(ValueError):
-            run_cbs_aantal_woningen_flow(extractor, postgres_loader)
+            run_cbs_aantal_woningen_flow(extractor, SqlmodelLoader(session))
 
         # There should be no records in the database, invalid gm_code
-        assert get_row_count(db_session, CbsAantalWoningen) == 0
+        assert get_row_count(session, CbsAantalWoningen) == 0
