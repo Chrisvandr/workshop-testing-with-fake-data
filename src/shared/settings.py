@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Workshop Testing with Fake Data"
 
     LOCAL_DEVELOPMENT: bool = False
+    ROLLBACK_TRANSACTIONS: bool = True
     LOG_LEVEL: int = logging.INFO
 
     PANDAS_DISPLAY_MAX_COLUMNS: int = 30
