@@ -6,11 +6,11 @@ A workshop demonstrating how to test Python applications using databases in Dock
 
 After completing this workshop, you will understand:
 
-- **Factory Boy Patterns** - Generating fake data for testing
+- **[Factory Boy](https://factoryboy.readthedocs.io/en/stable/orms.html#factory.alchemy.SQLAlchemyOptions)  Patterns** - Generating fake data for testing
 - **Database Testing Strategies** - Unit, integration, and Docker-based testing
-- **SQLModel & FastAPI Integration** - Modern Python data stack
+- **[SQLModel](https://sqlmodel.tiangolo.com/) & [FastAPI](https://fastapi.tiangolo.com/) Integration** - Modern Python data stack
 - **ETL Testing** - Test data transformation and processing flows
-- **Test Organization** - Structure tests with pytest markers and fixtures
+- **[Pytest](https://docs.pytest.org/en/stable/contents.html) tests Organization** - Structure tests with pytest markers and fixtures
 
 ## Project Structure
 
