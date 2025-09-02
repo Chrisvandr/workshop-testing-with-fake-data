@@ -117,7 +117,7 @@ In this workshop, an example has been provided that retrieves the number of hous
 
 **Objective**
 
-What we want to do now, is to enrich this data with other data from the CBS. For example, with the sale prices of houses (for which the data endpoint has already been provided in [CbsApi](src\etl\apis\cbs.py)), in order to create an endpoint that combines the number of houses built with the sale price of houses in a district for the last 10 years.
+What we want to do now, is to enrich this data with other data from the CBS. For example, with the sale prices of houses (for which the data endpoint has already been provided in [CbsApi](src/etl/apis/cbs.py)), in order to create an endpoint that combines the number of houses built with the sale price of houses in a district for the last 10 years.
 
 ```python
 # api/{gm_code}/housing should return
@@ -132,28 +132,28 @@ What we want to do now, is to enrich this data with other data from the CBS. For
 
 - Create a new SQLModel that represents the "verkochte_woningen" and "gemiddelde_verkoopprijs" data in the database 
 There already is a model for the [aantal woningen](src/models/v1/cbs_aantal_woningen.py)
-- Create a new 'flow' that extracts data retrieved from get_verkoopprijzen in [CbsApi](src\etl\apis\cbs.py) and loads it to the database using the [SqlmodelLoader](src\etl\flows\base.py)
+- Create a new 'flow' that extracts data retrieved from get_verkoopprijzen in [CbsApi](src/etl/apis/cbs.py) and loads it to the database using the [SqlmodelLoader](src/etl/flows/base.py)
 
-You may also want to write a [test](tests\etl\flows\test_cbs_aantal_woningen.py) making use the database running inside of docker
+You may also want to write a [test](tests/etl/flows/test_cbs_aantal_woningen.py) making use the database running inside of docker
 
 hint: the get_verkoopprijzen function returns a list of dicts (records), an individual record may look like this:
 ```python
 {'ID': 2, 'RegioS': 'NL01  ', 'Perioden': '1995KW03', 'PrijsindexVerkoopprijzen_1': 30, 'OntwikkelingTOVVoorgaandePeriode_2': 2.3, 'OntwikkelingTOVEenJaarEerder_3': None, 'VerkochteWoningen_4': 40498, 'OntwikkelingTOVVoorgaandePeriode_5': 9.3, 'OntwikkelingTOVEenJaarEerder_6': None, 'GemiddeldeVerkoopprijs_7': 95819, 'TotaleWaardeVerkoopprijzen_8': 3880}
 ```
 
-hint: check out the [run_cbs_aantal_woningen_flow](src\etl\flows\cbs_aantal_woningen.py)
+hint: check out the [run_cbs_aantal_woningen_flow](src/etl/flows/cbs_aantal_woningen.py)
 
 
 - Create a SQLAlchemyModelFactory for for your newly created model to create SQLModel objects with fake data to use in tests. The existing faker models can be found 
-[here](src\models\faker_models\db\fake_models.py)
-- Create a new, or use the [existing](src\app\api\crud\cbs.py) Crud class with a function to read the new data from database. Create a [test](tests\app\api\crud\test_cbs.py) by generating data using the faker model
-- Create new [endpoint](src\app\api\routes\cbs_aantal_woningen.py) for our api that retrieves the new data.
-Create a [test](tests\app\api\routes\test_cbs.py) using the TestClient that simulates a call to our api using the TestClient
+[here](src/models/faker_models/db/fake_models.py)
+- Create a new, or use the [existing](src/app/api/crud/cbs.py) Crud class with a function to read the new data from database. Create a [test](tests/app/api/crud/test_cbs.py) by generating data using the faker model
+- Create new [endpoint](src/app/api/routes/cbs_aantal_woningen.py) for our api that retrieves the new data.
+Create a [test](tests/app/api/routes/test_cbs.py) using the TestClient that simulates a call to our api using the TestClient
 
 Bonus
-- If you have not done so already, you can try to create a factory that can generate fake output for [get_verkoopprijzen](src\etl\apis\cbs.py). You can set model = dict instead of a SQLModel class to create a factory that generates dicts. You may want to be more specific than an abitrary string when specifying the fields.
+- If you have not done so already, you can try to create a factory that can generate fake output for [get_verkoopprijzen](src/etl/apis/cbs.py). You can set model = dict instead of a SQLModel class to create a factory that generates dicts. You may want to be more specific than an abitrary string when specifying the fields.
 - We may want to generate test data for our test environment. Can you do this using the same SQLModel factories?
-- Have a look at the [bad_test_get_aantal_woningen].(tests\app\api\crud\test_cbs.py)
+- Have a look at the [bad_test_get_aantal_woningen].(tests/app/api/crud/test_cbs.py)
 Can you explain why this test works?
 Can you think of a problem a test like this may cause?
 - It is possible to create a batch of random data using [create_batch](https://factoryboy.readthedocs.io/en/stable/reference.html#factory.Factory.create_batch). Can you use this to create a relevant test?
